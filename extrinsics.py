@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
+import argparse
 import bittensor as bt
+from bittensor_wallet import Wallet
 from scalecodec.base import ScaleBytes
 from scalecodec.types import GenericExtrinsic
 from typing import Dict, List
@@ -65,12 +67,28 @@ def retrieve_pending_extrinsics(
 
     return extrinsics
 
+def parse_arguments() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--netuid", type=int, default=0, help="The network UID of the subnet to retrieve extrinsics from. 0 means all subnets." )
+    parser.add_argument("--network", type=str, default="finney", help="The network to retrieve extrinsics from.")
+    parser.add_argument("--call_functions", type=str, default="add_stake,add_stake_limit", help="The functions to filter extrinsics by.")
+    return parser.parse_args()
 
 def main():
-    print("Hello from tao-test!")
-    pending_extrinsics = retrieve_pending_extrinsics(netuid=0, network="test")
+    args = parse_arguments()
+    sub = bt.Subtensor(network=args.network)
+    # TODO: For this exercise we will use a new wallet. But in a real scenario we would use the wallet we want to stake from. 
+    wallet = Wallet()
+    wallet.create()
+    balance = sub.get_balance(wallet.coldkey.ss58_address)
+    print(f"Balance: {balance}")
+
+    pending_extrinsics = retrieve_pending_extrinsics(netuid=args.netuid, call_functions=args.call_functions)
 
     print(pending_extrinsics)
+    st = bt.subtensor(network="finney")
+    for extrinsic in pending_extrinsics:
+        st.add_stake(wallet, amount=1)
 
 
 if __name__ == "__main__":

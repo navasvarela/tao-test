@@ -916,10 +916,14 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "bittensor" },
+    { name = "bittensor-wallet" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "bittensor", specifier = ">=9.0.4" }]
+requires-dist = [
+    { name = "bittensor", specifier = ">=9.0.4" },
+    { name = "bittensor-wallet", specifier = ">=3.0.4" },
+]
 
 [[package]]
 name = "termcolor"
